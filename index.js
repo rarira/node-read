@@ -8,9 +8,9 @@ function Article(dom, options, uri) {
   this.originalDOM = dom; // Save the original DOM if the user needs it
   this.cache = {};
 
-  if (uri && typeof uri != "undefined") {
-    this.base = uri.protocol + "//" + uri.hostname + uri.pathname;
-    if (uri.port && uri.port != 80) this.base += ":" + uri.port;
+  if (uri && typeof uri != 'undefined') {
+    this.base = uri.protocol + '//' + uri.hostname + uri.pathname;
+    if (uri.port && uri.port != 80) this.base += ':' + uri.port;
   } else {
     this.base = false;
   }
@@ -36,10 +36,10 @@ Article.prototype.getContent = function() {
   }
   var content = utils.extract(this.$, this.base, this.options).html();
 
-  return this.cache['article-content'] = content;
-}
+  return (this.cache['article-content'] = content);
+};
 
-// Better Article Title Extraction. 
+// Better Article Title Extraction.
 // Author Zihua Li https://github.com/luin/node-readability
 Article.prototype.getTitle = function() {
   if (typeof this.cache['article-title'] !== 'undefined') {
@@ -51,7 +51,10 @@ Article.prototype.getTitle = function() {
   // https://www.readability.com/developers/guidelines#publisher).
   var preferredTitle = this.$('.entry-title, .instapaper_title');
   if (preferredTitle.length > 0) {
-    return this.cache['article-title'] = preferredTitle.first().text().trim();
+    return (this.cache['article-title'] = preferredTitle
+      .first()
+      .text()
+      .trim());
   }
 
   var title = this.$('title').text();
@@ -62,32 +65,32 @@ Article.prototype.getTitle = function() {
   commonSeparatingCharacters.forEach(function(char) {
     var tmpArray = title.split(char);
     if (tmpArray.length > 1) {
-      if (betterTitle) return self.cache['article-title'] = title;
+      if (betterTitle) return (self.cache['article-title'] = title);
       betterTitle = tmpArray[0].trim();
     }
   });
 
   if (betterTitle && betterTitle.length > 10) {
-    return this.cache['article-title'] = betterTitle;
+    return (this.cache['article-title'] = betterTitle);
   }
 
-  return this.cache['article-title'] = title.trim();
-}
+  return (this.cache['article-title'] = title.trim());
+};
 
 Article.prototype.getDOM = function() {
   return this.originalDOM;
-}
+};
 
 Article.prototype.getHTML = function() {
   return this.$.html();
-}
+};
 
-var read = module.exports = function(html, options, callback) {
+var read = (module.exports = function(html, options, callback) {
   if (typeof options === 'function') {
     callback = options;
     options = {
       considerDIVs: true,
-      nodesToRemove: 'meta,iframe,noscript,style,aside,object,script'
+      nodesToRemove: 'meta,iframe,noscript,style,aside,object,script',
     };
   }
 
@@ -96,6 +99,8 @@ var read = module.exports = function(html, options, callback) {
       if (err) {
         return callback(err);
       }
+
+      console.log(body);
       parseDOM(body.toString(), url.parse(html));
     });
   } else {
@@ -106,9 +111,10 @@ var read = module.exports = function(html, options, callback) {
     if (!html) return callback(new Error('Empty html'));
     var $ = cheerio.load(html, {
       normalizeWhitespace: true,
-      decodeEntities: false
+      decodeEntities: false,
     });
-    if ($('body').length < 1) return callback(new Error("No body tag was found"));
+    if ($('body').length < 1)
+      return callback(new Error('No body tag was found'));
     return callback(null, new Article($, options, url), url);
   }
-}
+});
