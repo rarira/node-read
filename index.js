@@ -2,6 +2,7 @@ var utils = require('./lib/utils.js');
 var req = require('fetch').fetchUrl;
 var url = require('url');
 var cheerio = require('cheerio');
+var iconv = require('iconv-lite');
 
 function Article(dom, options, uri) {
   this.$ = dom; // Will be modified in-place after analyzing
@@ -100,7 +101,11 @@ var read = (module.exports = function(html, options, callback) {
         return callback(err);
       }
 
-      console.log(body);
+      if (html.includes('seoul.co.kr')) {
+        const str = iconv.decode(Buffer.from(body), 'euc-kr');
+        body = iconv.encode(str, 'utf-8');
+      }
+
       parseDOM(body.toString(), url.parse(html));
     });
   } else {
