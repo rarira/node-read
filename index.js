@@ -91,7 +91,7 @@ var read = (module.exports = function(html, options, callback) {
     callback = options;
     options = {
       considerDIVs: true,
-      nodesToRemove: 'meta,iframe,noscript,style,aside,object,script',
+      nodesToRemove: 'ins,meta,iframe,noscript,style,aside,object,script',
     };
   }
 
